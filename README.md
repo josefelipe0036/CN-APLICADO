@@ -8,7 +8,7 @@
 
 
 $$
-St \frac{dv_{z}^*}{dt^*} = 1 - v_{z}^* - \frac{3}{8} Re_{s} (v_{z}^*)^2
+St \cdot \frac{dv_{z}^{*}}{dt^{*}} = 1 - v_{z}^{*} - \frac{3}{8} Re_{s} (v_{z}^{*})^{2}
 $$
 
 ### Parâmetros Físicos:
