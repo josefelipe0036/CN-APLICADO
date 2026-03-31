@@ -6,10 +6,7 @@
 
  A simulação baseia-se na **equação diferencial adimensional** derivada na Atividade para Casa (APC), que descreve a aceleração da esfera sob a influência da gravidade, empuxo e forças de arrasto (Stokes e Oseen):
 
-
-$$
-St \frac{d v_z^*}{d t} = 1 - v_z^* - \frac{3}{8} Re_s (v_z^*)^2
-$$
+$ St \cdot \frac{d v_z^*}{dt} = 1 - v_z^* - \frac{3}{8} Re_s (v_z^*)^2 $
 
 ### Parâmetros Físicos:
 
