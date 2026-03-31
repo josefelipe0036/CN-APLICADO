@@ -1,62 +1,53 @@
-## 1. Adimensionalização da Equação do Movimento
+# Simulação Numérica de Sedimentação de Esferas (RK4)
 
-O objetivo desta etapa é transformar a equação diferencial dimensional em uma forma universal que dependa dos parâmetros fundamentais: o **Número de Stokes ($St$)** e o **Número de Reynolds de partícula ($Re_s$)**[cite: 137].
+[cite_start]Este projeto implementa um solver numérico em Python para descrever a dinâmica de uma esfera sólida sedimentando em um fluido viscoso[cite: 152]. [cite_start]O objetivo é analisar o comportamento da velocidade da partícula em diferentes regimes de escoamento, do limite de Stokes ($Re \to 0$) até efeitos inerciais moderados ($Re \sim 1$)[cite: 56, 116].
 
-### A. Equação de Partida
-Para um cenário com pequenos efeitos inerciais ($Re \neq 0$), a equação dimensional é dada por[cite: 135]:
-$$m_p \frac{dv_z}{dt} = -6\pi\eta a v_z - \frac{9}{4}\pi\rho_f a^2 v_z^2 + \frac{4\pi a^3}{3}\Delta\rho g$$
+## 1\. Fundamentação Teórica
 
-### B. Definição das Escalas e Parâmetros
-Para a adimensionalização, utilizamos as seguintes referências[cite: 42, 138]:
-* **Velocidade de Stokes ($U_s$):** Velocidade terminal em baixo Reynolds.
-* **Variáveis Adimensionais (*):** $v_z^* = \frac{v_z}{U_s}$ e $t^* = \frac{t U_s}{a}$.
-* **Número de Reynolds de partícula:** $Re_s = \frac{\rho_f U_s a}{\eta}$.
+[cite_start]A simulação baseia-se na **equação diferencial adimensional** derivada na Atividade para Casa (APC), que descreve a aceleração da esfera sob a influência da gravidade, empuxo e forças de arrasto (Stokes e Oseen)[cite: 62, 67, 137]:
 
-### C. Processo Analítico
-Substituindo as variáveis dimensionais pelas suas correspondentes adimensionais e simplificando os termos conforme as definições de $St$ e $Re_s$[cite: 47, 71, 137]:
-
-1. Substituímos $v_z = v_z^* U_s$ e $dt = dt^* \frac{a}{U_s}$.
-2. Dividimos a equação pelos termos de arrasto viscoso.
-3. Agrupamos as constantes nos adimensionais correspondentes.
-
-**Forma Final Adimensional:**
 $$St \frac{dv_z^*}{dt^*} = 1 - v_z^* - \frac{3}{8} Re_s (v_z^*)^2$$
 
----
+### Parâmetros Físicos:
 
-## 2. Planejamento do Algoritmo (Runge-Kutta 4)
+  * [cite_start]**Número de Stokes ($St$):** Razão entre a escala de tempo de relaxação da partícula e o tempo convectivo do fluido[cite: 47].
+  * [cite_start]**Número de Reynolds de partícula ($Re_s$):** Parâmetro que mede a importância relativa das forças inerciais frente às viscosas[cite: 74, 138].
+  * [cite_start]**Variáveis Adimensionais ($v_z^*$ e $t^*$):** Velocidade e tempo normalizados para garantir a universalidade do modelo[cite: 42, 70].
 
-O planejamento a seguir visa a implementação computacional do método de Runge-Kutta de quarta ordem (RK4) para resolver a EDO de sedimentação[cite: 128, 140].
+## 2\. Método Numérico: Runge-Kutta de 4ª Ordem (RK4)
 
-### A. Definição da Função de Evolução
-A derivada temporal da velocidade é definida como[cite: 127]:
-$$f(t^*, v_z^*) = \frac{1}{St} \left( 1 - v_z^* - \frac{3}{8} Re_s (v_z^*)^2 \right)$$
+[cite_start]Para a integração temporal da EDO, utiliza-se o método de **Runge-Kutta de quarta ordem clássico**[cite: 128]. [cite_start]Este método oferece um erro de truncamento global de $O(h^4)$, sendo superior ao método de Euler simples[cite: 130, 131].
 
-### B. Estrutura do Algoritmo (Fluxo Lógico)
+[cite_start]O algoritmo calcula quatro inclinações intermediárias ($k_1, k_2, k_3, k_4$) em cada passo de tempo para determinar o próximo valor da velocidade[cite: 131, 143].
 
-Conforme os requisitos da atividade[cite: 141, 148]:
+## 3\. Descrição do Programa
 
-1. **Definição de Variáveis:**
-   - Parâmetros: `St`, `Res`.
-   - Numéricos: Passo de tempo `h`, tempo total de simulação.
-   - Estado: `v = 0` (condição inicial de repouso)[cite: 48].
+### Entradas (Inputs)
 
-2. **Cálculo dos Coeficientes $k$ (RK4):**
-   Para cada iteração temporal[cite: 131]:
-   - $k_1 = f(t_i, v_i)$
-   - $k_2 = f(t_i + \frac{h}{2}, v_i + \frac{h}{2}k_1)$
-   - $k_3 = f(t_i + \frac{h}{2}, v_i + \frac{h}{2}k_2)$
-   - $k_4 = f(t_i + h, v_i + hk_3)$
+[cite_start]O simulador requer os seguintes parâmetros definidos no início da execução[cite: 146]:
 
-3. **Avanço Temporal:**
-   - Atualizar velocidade: $v_{i+1} = v_i + \frac{h}{6}(k_1 + 2k_2 + 2k_3 + k_4)$[cite: 130].
-   - Incrementar tempo: $t_{i+1} = t_i + h$.
+  * `St`: O número de Stokes (ex: 0.1, 0.5, 2.0).
+  * `Res`: O número de Reynolds da partícula (0 para regime de Stokes, $>0$ para inercial).
+  * [cite_start]`h`: O passo de tempo para o refinamento da malha temporal[cite: 155].
+  * `t_final`: O tempo total da simulação.
 
-4. **Armazenamento e Saída:**
-   - Os resultados serão armazenados em vetores para geração de gráficos e comparação com as soluções analíticas de Stokes e Ricatti fornecidas[cite: 49, 79, 147].
+### Processamento
 
----
+1.  [cite_start]**Inicialização:** Define a velocidade inicial $v_z^*(0) = 0$ (partícula partindo do repouso)[cite: 48].
+2.  [cite_start]**Iteração RK4:** Avança no tempo calculando os coeficientes $k_i$ e atualizando a velocidade em cada passo $h$[cite: 144].
+3.  [cite_start]**Validação:** Compara os resultados numéricos com as soluções analíticas disponíveis no material (Solução de Ricatti e Exponencial)[cite: 49, 79, 157].
 
-### Referências
-1. Sobral, Y. D., et al. (2007) [cite: 170].
-2. Chapra, S. C., Canale, R. P. (2008)[cite: 171].
+### Saídas (Outputs)
+
+  * [cite_start]**Vetores de Dados:** Conjunto de dados contendo o histórico de tempo e velocidade[cite: 147].
+  * [cite_start]**Gráficos:** Curvas de sedimentação comparando o comportamento numérico com o padrão ouro (analítico)[cite: 158, 163].
+
+## 4\. Requisitos de Execução
+
+  * [cite_start]O código foi desenvolvido de forma nativa, utilizando apenas estruturas básicas da linguagem (vetores, funções e laços), conforme as restrições da atividade[cite: 160, 161].
+  * Requer **Python 3.x** e as bibliotecas `numpy` e `matplotlib` para visualização dos dados.
+
+
+**Autor:** José Felipe (Estatística - UnB)
+**Data:** Março de 2026
+**Repositório:** [josefelipe0036/CN-APLICADO](https://www.google.com/search?q=https://github.com/josefelipe0036/CN-APLICADO)
