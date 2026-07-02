@@ -10,15 +10,6 @@ O motor de integração numérica foi construído inteiramente do zero utilizand
 
 A única biblioteca externa necessária é o `matplotlib`, utilizada exclusivamente para a plotagem dos perfis de velocidade.
 
-Para instalar a dependência, execute no seu terminal:
-`pip install matplotlib`
-
-## Como Executar
-
-Faça o clone deste repositório e execute o script principal:
-
-`python blasius_solver.py`
-
 ## Parâmetros de Entrada (Inputs)
 
 Os parâmetros numéricos necessários para a simulação estão definidos no bloco principal (`__main__`) do script. Você pode alterá-los diretamente no código caso deseje refinar a malha ou testar diferentes tolerâncias:
